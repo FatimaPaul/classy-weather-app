@@ -1,38 +1,82 @@
 import React from "react";
-class Counter extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { count: 5 };
+import Weather from "../src/Weather";
 
-    // Bind the function by this(Counter)
-    this.handleDecrement = this.handleDecrement.bind(this);
-    this.handleIncrement = this.handleIncrement.bind(this);
-  }
+function convertToFlag(countryCode) {
+  const codePoints = countryCode
+    .toUpperCase()
+    .split("")
+    .map((char) => 127397 + char.charCodeAt());
+  return String.fromCodePoint(...codePoints);
+}
 
-  // Function like class methods
-  handleDecrement() {
-    this.setState((obj) => {
-      return { count: obj.count - 1 };
-    });
-  }
+class App extends React.Component {
+  // classfields
+  state = {
+    location: "",
+    isLoading: false,
+    weather: {},
+    locationFlag: "",
+  };
+  // constructor(props) {
+  //   super(props);
+  //   this.fetchWeather = this.fetchWeather.bind(this);
+  // }
 
-  handleIncrement() {
-    this.setState((obj) => {
-      return { count: obj.count + 1 };
-    });
-  }
+  // classfields
+  fetchWeather = async () => {
+    try {
+      this.setState({ isLoading: true });
+      // 1) Getting location (geocoding)
+      const geoRes = await fetch(
+        `https://geocoding-api.open-meteo.com/v1/search?name=${this.state.location}`
+      );
+      const geoData = await geoRes.json();
+      console.log(geoData);
+
+      if (!geoData.results) throw new Error("Location not found");
+
+      const { latitude, longitude, timezone, name, country_code } =
+        geoData.results.at(0);
+
+      this.setState({ locationFlag: `${name} ${convertToFlag(country_code)}` });
+
+      // 2) Getting actual weather
+      const weatherRes = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&timezone=${timezone}&daily=weathercode,temperature_2m_max,temperature_2m_min`
+      );
+      const weatherData = await weatherRes.json();
+      this.setState({ weather: weatherData.daily });
+    } catch (err) {
+      console.err(err);
+    } finally {
+      this.setState({ isLoading: false });
+    }
+  };
 
   render() {
-    const dated = new Date("17 june 2025");
-    dated.setDate(dated.getDate() + this.state.count);
     return (
-      <>
-        <button onClick={this.handleDecrement}>-</button>
-        <span>{dated.toDateString()}</span>
-        <button onClick={this.handleIncrement}>+</button>
-      </>
+      <div className="app">
+        <h1>Classy Weather</h1>
+        <div>
+          <input
+            type="text"
+            placeholder="Search for Location...."
+            value={this.state.location}
+            onChange={(e) => this.setState({ location: e.target.value })}
+          />
+        </div>
+        <button onClick={this.fetchWeather}>Get Weather</button>
+
+        {this.state.isLoading && <p>Loading...</p>}
+        {this.state.weather.weathercode && (
+          <Weather
+            weather={this.state.weather}
+            displayLocation={this.state.locationFlag}
+          />
+        )}
+      </div>
     );
   }
 }
 
-export default Counter;
+export default App;

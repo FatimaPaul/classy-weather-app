@@ -14,8 +14,8 @@ body {
   font-family: "Cinzel Decorative", cursive;
   font-size: 2rem;
   height: 100vh;
-  color: #222;
-  background-color: #eabfb9;
+  color: #e8e8e8;
+  background-color: rgba(9, 80, 68, 0.882);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -28,8 +28,8 @@ body {
   width: 112rem;
   gap: 4rem;
   padding: 6rem 0;
-  border: 2px solid #222;
-  outline: 2px solid #222;
+  border: 2px solid #7ad520;
+  outline: 2px solid #578203;
   outline-offset: 1.2rem;
 }
 
@@ -49,14 +49,14 @@ input {
   font-family: inherit;
   color: inherit;
   font-size: 2rem;
-  background-color: #f0d2ce;
+  background-color: rgba(1, 31, 20, 0.574);
   padding: 1.6rem 3.2rem;
   border: none;
   width: 32rem;
 }
 
 input:focus {
-  outline: 2px solid #222;
+  outline: 2px solid #f8f7f7;
 }
 
 .weather {
@@ -66,7 +66,7 @@ input:focus {
 }
 
 .day {
-  background-color: #f0d2ce;
+  background-color: rgba(2, 32, 29, 0.806);
   padding: 1.6rem 0 2rem;
   width: 12.8rem;
 
